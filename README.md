@@ -1,2 +1,2 @@
-# webpack
-采用webpack搭建前端脚手架
+# Web Framework
+前端脚手架
