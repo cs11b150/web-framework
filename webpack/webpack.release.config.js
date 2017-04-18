@@ -7,66 +7,33 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 // process['traceDeprecation'] = true;
 
+const config = require('./config')({
+    Mode: 'Release',
+    ExtractTextPlugin: ExtractTextPlugin,
+});
+
+let entry = {};
+let vendorNames = [];
+(function() {
+    config.entry_vendors.forEach(function (item, index) {
+        let vendorName = 'vendor' + (config.entry_vendors.length - 1 - index);
+        entry[vendorName] = item;
+        vendorNames.push(vendorName);
+    });
+    entry.index = path.resolve(__dirname, 'src/js/index.js');
+}());
+
 module.exports = {
-    entry: {
-        index: path.resolve(__dirname, 'src/js/index.js'),
-        vendor: [
-            'react',
-            'react-dom',
-        ],
-    },
+    entry: entry,
     output: {
         path: path.resolve(__dirname, 'Release'),
         filename: 'js/[name].[hash].js',
     },
     resolve: {
-        alias: {
-            'img': path.resolve(__dirname, 'src/img'),
-            'css': path.resolve(__dirname, 'src/css'),
-        }
+        alias: config.resolve_alias,
     },
     module: {
-        rules: [{
-            test: /\.js$/,
-            include: path.resolve(__dirname, 'src'),
-            exclude: /node_modules/,
-            use: {
-                loader: 'babel-loader',
-                options: {
-                    presets: ['env', 'react'],
-                },
-            }
-        }, {
-            test: /\.(less|css)/,
-            use: ExtractTextPlugin.extract({
-                fallback: 'style-loader',
-                use: [{
-                    loader: 'css-loader',
-                }, {
-                    loader: 'postcss-loader',
-                }, {
-                    loader: 'less-loader',
-                }]
-            }),
-        }, {
-            test: /\.(png|jpe?g)/i,
-            use: [{
-                loader: 'url-loader',
-                options: {
-                    name: 'img/[name].[hash].[ext]',
-                    limit: 8192,
-                }
-            }]
-        }, {
-            test: /\.(eot|svg|ttf|woff2?)$/,
-            use: [{
-                loader: 'url-loader',
-                options: {
-                    name: 'font/[name].[hash].[ext]',
-                    limit: 8192,
-                }
-            }],
-        }]
+        rules: config.module_rules
     },
     plugins: [
         new CleanWebpackPlugin(['Release'], {
@@ -96,9 +63,9 @@ module.exports = {
             $: 'jquery',
             jQuery: 'jquery',
         }),
-        new ExtractTextPlugin('css/style.[hash].css'),
+        new ExtractTextPlugin('css/index.[hash].css'),
         new webpack.optimize['CommonsChunkPlugin']({
-            name: 'vendor',
+            name: vendorNames,
         }),
     ]
 };
