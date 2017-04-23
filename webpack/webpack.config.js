@@ -19,11 +19,13 @@ const WebpackConfig = {
     },
     output: {
         path: path.resolve(__dirname, Mode.dir),
+        publicPath: '/',
         filename: 'js/[name]' + (Mode.isRelease ? '.[hash].js' : '.js'),
     },
     resolve: {
         alias: {
             css: path.resolve(__dirname, 'src/css'),
+            img: path.resolve(__dirname, 'src/img'),
         },
     },
     module: {
@@ -88,6 +90,10 @@ const WebpackConfig = {
             jQuery: 'jquery',
         }),
         new ExtractTextPlugin('css/style' + (Mode.isRelease ? '.[hash].css' : '.css')),
+        new webpack['DllReferencePlugin']({
+            context: __dirname,
+            manifest: path.resolve(__dirname, 'src/js/vendors/manifest' + (Mode.isRelease ? '.min.json' : '.json')),
+        }),
     ]
 };
 
@@ -106,6 +112,9 @@ if (Mode.isRelease) {
                 warnings: false,
             }
         }),
+        new CopyWebpackPlugin([
+            {context: 'src', from: 'js/vendors/*.min.js'},
+        ]),
     ])
 } else {
     // Debug
@@ -117,6 +126,7 @@ if (Mode.isRelease) {
     WebpackConfig.plugins = WebpackConfig.plugins.concat([
         new CopyWebpackPlugin([
             {context: 'src', from: 'ajax/**/*'},
+            {context: 'src', from: 'js/vendors/*.js'},
         ]),
     ]);
 }

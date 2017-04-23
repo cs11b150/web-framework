@@ -2,6 +2,7 @@ import 'css/index.less';
 
 import React from 'react';
 import ReactDom from 'react-dom';
+import Image from 'img/test2.jpg';
 
 class App extends React.Component {
     constructor(props) {
@@ -12,11 +13,15 @@ class App extends React.Component {
     }
 
     render() {
-        return <h1>{this.state.text}</h1>
+        return <div>
+            <h1>{this.state.text}</h1>
+            <div className="test-img"></div>
+            <img src={Image}/>
+        </div>
     }
 }
 
 ReactDom.render(
-    document.getElementById('root'),
-    <App/>
+    <App/>,
+    document.getElementById('root')
 );

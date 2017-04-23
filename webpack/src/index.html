@@ -5,6 +5,14 @@
     <title>JWebpack</title>
 </head>
 <body>
+<script type="text/javascript">
+    isRelease = '<%= htmlWebpackPlugin.options.mode.isRelease %>' == 'true';
+</script>
 <div id="root"></div>
+<% if ( htmlWebpackPlugin.options.mode.isRelease) { %>
+<%= '<script type="text/javascript" src="js/vendors/vendors.xxx.min.js"></script>' %>
+<% } else { %>
+<%= '<script type="text/javascript" src="js/vendors/vendors.js"></script>' %>
+<% } %>
 </body>
 </html>
